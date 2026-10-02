@@ -1,0 +1,138 @@
+{
+  "company": {
+    "name": "Brewly Coffee Co.",
+    "tagline": "Fresh-roasted coffee, delivered to your door.",
+    "founded": 2018,
+    "founders": ["Maya Rahman", "Daniel Ortiz"],
+    "mission": "To make specialty coffee accessible, ethical, and fresh for everyone.",
+    "about": "Brewly Coffee Co. is an online coffee roaster and subscription service. We source beans directly from small farms in Ethiopia, Colombia, and Guatemala, roast them in small batches, and ship within 48 hours of roasting.",
+    "team_size": 24
+  },
+  "contact": {
+    "email": "support@brewly.example",
+    "phone": "+1-555-0142",
+    "support_hours": "Monday to Friday, 9:00 AM to 6:00 PM (EST)",
+    "address": "120 Roaster Lane, Portland, OR 97201, USA",
+    "website": "www.brewly.example",
+    "social": {
+      "instagram": "@brewlycoffee",
+      "twitter": "@brewlycoffee"
+    }
+  },
+  "products": [
+    {
+      "name": "Sunrise Blend",
+      "roast": "Light",
+      "origin": "Ethiopia",
+      "notes": "Floral, citrus, honey",
+      "price_usd": 14.99,
+      "size": "12 oz bag"
+    },
+    {
+      "name": "Midnight Espresso",
+      "roast": "Dark",
+      "origin": "Colombia and Guatemala",
+      "notes": "Dark chocolate, caramel, smoky finish",
+      "price_usd": 15.99,
+      "size": "12 oz bag"
+    },
+    {
+      "name": "Golden Hour",
+      "roast": "Medium",
+      "origin": "Colombia",
+      "notes": "Toffee, red apple, smooth body",
+      "price_usd": 14.49,
+      "size": "12 oz bag"
+    },
+    {
+      "name": "Decaf Dream",
+      "roast": "Medium",
+      "origin": "Guatemala",
+      "notes": "Cocoa, almond, mild sweetness (Swiss Water process decaf)",
+      "price_usd": 16.49,
+      "size": "12 oz bag"
+    },
+    {
+      "name": "Cold Brew Kit",
+      "roast": "Medium-dark",
+      "origin": "Blend",
+      "notes": "Includes coarse-ground coffee and 2 reusable brew bags. Makes 8 servings.",
+      "price_usd": 22.99,
+      "size": "1 kit"
+    }
+  ],
+  "services": [
+    {
+      "name": "Coffee Subscription",
+      "description": "Get fresh coffee delivered weekly, every two weeks, or monthly. Pick your roast and grind. Skip, pause, or cancel anytime.",
+      "discount": "10% off every order"
+    },
+    {
+      "name": "Gift Boxes",
+      "description": "Curated gift sets with three bags of coffee and a Brewly mug, with optional handwritten message.",
+      "price_usd": 49.99
+    },
+    {
+      "name": "Wholesale for Cafes",
+      "description": "Bulk pricing for cafes and offices with orders of 20 lbs or more per month. Contact wholesale@brewly.example for a quote."
+    },
+    {
+      "name": "Virtual Tasting Sessions",
+      "description": "45-minute live online cupping session with our head roaster. Held on the first Saturday of every month. Price: $15 per person."
+    }
+  ],
+  "policies": {
+    "shipping": {
+      "domestic": "Standard shipping (3-5 business days) costs $4.99. Free on orders over $35. Express (1-2 business days) costs $12.99.",
+      "international": "We currently ship only within the United States and Canada. Canada shipping takes 7-10 business days and costs $14.99.",
+      "processing_time": "Orders are roasted and shipped within 48 hours."
+    },
+    "returns_and_refunds": "If you are unhappy with your coffee, contact us within 30 days for a replacement or full refund. No need to return the coffee. Equipment such as brewers and mugs can be returned unused within 30 days.",
+    "subscription": "Subscriptions can be paused, skipped, or canceled anytime from your account page, at least 48 hours before the next shipment.",
+    "payment_methods": ["Visa", "Mastercard", "American Express", "PayPal", "Apple Pay"],
+    "privacy": "We never sell customer data. Payment details are processed securely through our payment provider and are not stored on our servers."
+  },
+  "faqs": [
+    {
+      "question": "How fresh is your coffee?",
+      "answer": "We roast to order and ship within 48 hours of roasting. Each bag has the roast date printed on it."
+    },
+    {
+      "question": "Do you offer whole bean and ground coffee?",
+      "answer": "Yes. You can choose whole bean, espresso grind, drip grind, or French press grind at checkout."
+    },
+    {
+      "question": "Is your coffee ethically sourced?",
+      "answer": "Yes. We buy directly from small farms and pay above Fair Trade minimum prices."
+    },
+    {
+      "question": "Do you have decaf?",
+      "answer": "Yes. Our Decaf Dream is Swiss Water process decaf, which is chemical-free."
+    },
+    {
+      "question": "How do I track my order?",
+      "answer": "You will receive a tracking link by email once your order ships. You can also find it under Orders in your account."
+    },
+    {
+      "question": "Can I change my subscription frequency?",
+      "answer": "Yes. Log in, go to Subscriptions, and choose weekly, every two weeks, or monthly."
+    },
+    {
+      "question": "Do you sell coffee machines?",
+      "answer": "No. We sell coffee, cold brew kits, and a small range of accessories such as mugs and filters."
+    },
+    {
+      "question": "Do you have a physical store?",
+      "answer": "We have a small roastery shop at our Portland address, open Saturdays from 10 AM to 4 PM. All other sales are online."
+    },
+    {
+      "question": "Do you offer discounts?",
+      "answer": "Subscribers get 10% off every order. New customers get 15% off their first order with the code WELCOME15."
+    },
+    {
+      "question": "How do I become a wholesale customer?",
+      "answer": "Email wholesale@brewly.example with your business name and expected monthly volume. We reply within 2 business days."
+    }
+  ],
+  "out_of_scope_response": "Sorry, I can only help with questions about Brewly Coffee Co., such as our products, orders, shipping, and subscriptions. Is there anything about Brewly I can help you with?"
+}
