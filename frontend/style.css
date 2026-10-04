@@ -1,0 +1,176 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #2b1a10;
+  background: #ffffff;
+  line-height: 1.6;
+}
+
+/* Header and navigation */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 12px 24px;
+  background: #4b2e1e;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.nav a {
+  color: #f1e6da;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.nav a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Hero */
+.hero {
+  padding: 80px 24px;
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4b2e1e, #8a5a3b);
+}
+
+.hero h1 {
+  max-width: 700px;
+  margin: 0 auto 16px;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1.2;
+}
+
+.hero p {
+  max-width: 560px;
+  margin: 0 auto 28px;
+  font-size: 1.1rem;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 28px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #e0a458;
+  color: #2b1a10;
+}
+
+.btn-secondary {
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+
+/* Sections */
+.section {
+  padding: 56px 24px;
+  scroll-margin-top: 70px;
+}
+
+.section.alt {
+  background: #f3ece4;
+}
+
+.section h2 {
+  max-width: 1000px;
+  margin: 0 auto 24px;
+  font-size: 1.8rem;
+  color: #4b2e1e;
+}
+
+.lead {
+  max-width: 1000px;
+  margin: 0 auto 12px;
+  font-size: 1.05rem;
+}
+
+/* Cards */
+.grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5d9cc;
+  border-radius: 14px;
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  color: #4b2e1e;
+}
+
+.card p {
+  margin: 0 0 8px;
+}
+
+.tag {
+  font-size: 0.85rem;
+  color: #8a5a3b;
+}
+
+.price {
+  font-weight: 700;
+  color: #4b2e1e;
+}
+
+.price span {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: #8a5a3b;
+}
+
+/* Footer */
+.site-footer {
+  padding: 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #f1e6da;
+  background: #2b1a10;
+}
+
+.site-footer p {
+  margin: 0;
+}

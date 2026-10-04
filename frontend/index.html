@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brewly Coffee Co. | Fresh-roasted coffee, delivered</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="#home" class="logo">Brewly</a>
+    <nav class="nav">
+      <a href="#home">Home</a>
+      <a href="#about">About Us</a>
+      <a href="#coffee">Our Coffee</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact Us</a>
+    </nav>
+  </header>
+
+  <section id="home" class="hero">
+    <h1>Fresh-roasted coffee, delivered to your door.</h1>
+    <p>Small-batch coffee from single-origin farms, shipped within 48 hours of roasting.</p>
+    <div class="hero-buttons">
+      <a href="#coffee" class="btn btn-primary">Shop Coffee</a>
+      <a href="#contact" class="btn btn-secondary">Contact Us</a>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h2>About Us</h2>
+    <p class="lead">Brewly Coffee Co. was founded in 2018 by Maya Rahman and Daniel Ortiz. We source beans directly from small farms in Ethiopia, Colombia, and Guatemala, roast them in small batches, and ship within 48 hours of roasting.</p>
+    <p class="lead">Our mission is to make specialty coffee accessible, ethical, and fresh for everyone.</p>
+  </section>
+
+  <section id="coffee" class="section alt">
+    <h2>Our Coffee</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Sunrise Blend</h3>
+        <p class="tag">Light roast &middot; Ethiopia</p>
+        <p>Floral, citrus, honey</p>
+        <p class="price">$14.99 <span>12 oz bag</span></p>
+      </article>
+      <article class="card">
+        <h3>Midnight Espresso</h3>
+        <p class="tag">Dark roast &middot; Colombia &amp; Guatemala</p>
+        <p>Dark chocolate, caramel, smoky finish</p>
+        <p class="price">$15.99 <span>12 oz bag</span></p>
+      </article>
+      <article class="card">
+        <h3>Golden Hour</h3>
+        <p class="tag">Medium roast &middot; Colombia</p>
+        <p>Toffee, red apple, smooth body</p>
+        <p class="price">$14.49 <span>12 oz bag</span></p>
+      </article>
+      <article class="card">
+        <h3>Decaf Dream</h3>
+        <p class="tag">Medium roast &middot; Guatemala</p>
+        <p>Cocoa, almond, mild sweetness</p>
+        <p class="price">$16.49 <span>12 oz bag</span></p>
+      </article>
+      <article class="card">
+        <h3>Cold Brew Kit</h3>
+        <p class="tag">Medium-dark &middot; Blend</p>
+        <p>Coarse-ground coffee and 2 reusable brew bags. Makes 8 servings.</p>
+        <p class="price">$22.99 <span>1 kit</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section id="services" class="section">
+    <h2>Services</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Coffee Subscription</h3>
+        <p>Weekly, every two weeks, or monthly. Skip, pause, or cancel anytime. Save 10% on every order.</p>
+      </article>
+      <article class="card">
+        <h3>Gift Boxes</h3>
+        <p>Three bags of coffee and a Brewly mug, with an optional handwritten message.</p>
+        <p class="price">$49.99</p>
+      </article>
+      <article class="card">
+        <h3>Wholesale</h3>
+        <p>Bulk pricing for cafes and offices ordering 20 lbs or more per month.</p>
+      </article>
+      <article class="card">
+        <h3>Virtual Tastings</h3>
+        <p>A 45-minute live online cupping session with our head roaster, on the first Saturday of every month.</p>
+        <p class="price">$15 <span>per person</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section id="contact" class="section alt">
+    <h2>Contact Us</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Email</h3>
+        <p>support@brewly.example</p>
+      </article>
+      <article class="card">
+        <h3>Phone</h3>
+        <p>+1-555-0142</p>
+      </article>
+      <article class="card">
+        <h3>Support Hours</h3>
+        <p>Monday to Friday<br>9:00 AM to 6:00 PM (EST)</p>
+      </article>
+      <article class="card">
+        <h3>Visit Us</h3>
+        <p>120 Roaster Lane<br>Portland, OR 97201, USA</p>
+        <p>Roastery shop open Saturdays, 10 AM to 4 PM.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Brewly Coffee Co. This is a demo project with fictional company details.</p>
+  </footer>
+    <!-- Chat widget -->
+  <button class="chat-launcher" id="chat-launcher" type="button" aria-label="Open chat" aria-expanded="false">💬</button>
+
+  <div class="chat-window" id="chat-window">
+    <header class="chat-header">
+      <div>
+        <h2>Brewly Assistant</h2>
+        <p>Ask about our coffee, orders, and shipping</p>
+      </div>
+      <button type="button" id="chat-close" aria-label="Close chat">✕</button>
+    </header>
+
+    <main class="messages" id="messages">
+      <div class="message bot">Hi! I'm the Brewly assistant. How can I help you today?</div>
+    </main>
+
+    <div class="input-bar">
+      <input type="text" id="message-input" placeholder="Type your question..." aria-label="Your message">
+      <button type="button" id="send-button">Send</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
