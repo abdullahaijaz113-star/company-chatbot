@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://brewly-chatbot-api-git-main-no-team-fdf3.vercel.app";
 
 const messagesEl = document.getElementById("messages");
 const inputEl = document.getElementById("message-input");
