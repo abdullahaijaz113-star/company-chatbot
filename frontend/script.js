@@ -16,9 +16,10 @@ function addMessage(text, who) {
   return div;
 }
 
-async function sendMessage() {
-  const text = inputEl.value.trim();
+async function sendMessage(presetText) {
+  const text = (presetText || inputEl.value).trim();
   if (!text) return;
+  clearSuggestions();
 
   addMessage(text, "user");
   inputEl.value = "";
@@ -52,7 +53,7 @@ async function sendMessage() {
   inputEl.focus();
 }
 
-sendBtn.addEventListener("click", sendMessage);
+sendBtn.addEventListener("click", () => sendMessage());
 inputEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") sendMessage();
 });
@@ -73,3 +74,38 @@ launcher.addEventListener("click", () => {
   setChatOpen(!chatWindow.classList.contains("open"));
 });
 closeBtn.addEventListener("click", () => setChatOpen(false));
+// Suggested questions (quick replies)
+const SUGGESTED_QUESTIONS = [
+  "What is your cheapest coffee?",
+  "How long does shipping take?",
+  "Do you have decaf?",
+  "How do subscriptions work?",
+  "What is your return policy?",
+];
+
+let suggestionsEl = null;
+
+function showSuggestions() {
+  suggestionsEl = document.createElement("div");
+  suggestionsEl.className = "suggestions";
+
+  SUGGESTED_QUESTIONS.forEach((question) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "suggestion";
+    btn.textContent = question;
+    btn.addEventListener("click", () => sendMessage(question));
+    suggestionsEl.appendChild(btn);
+  });
+
+  messagesEl.appendChild(suggestionsEl);
+}
+
+function clearSuggestions() {
+  if (suggestionsEl) {
+    suggestionsEl.remove();
+    suggestionsEl = null;
+  }
+}
+
+showSuggestions();
