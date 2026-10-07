@@ -29,11 +29,17 @@ async function sendMessage(presetText) {
   const reply = addMessage("Typing...", "bot typing");
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
     const response = await fetch(API_URL + "/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
     const data = await response.json();
 
     if (response.ok) {
@@ -44,7 +50,11 @@ async function sendMessage(presetText) {
       reply.textContent = "Something went wrong. Please try again.";
     }
   } catch (error) {
-    reply.textContent = "Can't reach the assistant. Please try again in a moment.";
+    if (error.name === "AbortError") {
+      reply.textContent = "That took too long. Please try again in a minute.";
+    } else {
+      reply.textContent = "Can't reach the assistant. Please try again in a moment.";
+    }
   }
 
   reply.classList.remove("typing");
