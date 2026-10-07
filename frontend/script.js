@@ -74,13 +74,28 @@ launcher.addEventListener("click", () => {
   setChatOpen(!chatWindow.classList.contains("open"));
 });
 closeBtn.addEventListener("click", () => setChatOpen(false));
-// Suggested questions (quick replies)
-const SUGGESTED_QUESTIONS = [
-  "What is your cheapest coffee?",
-  "How long does shipping take?",
-  "Do you have decaf?",
-  "How do subscriptions work?",
-  "What is your return policy?",
+// Suggested questions with prewritten answers (instant, no API call)
+const SUGGESTED = [
+  {
+    question: "What is your cheapest coffee?",
+    answer: "Our cheapest coffee is Golden Hour at $14.49 for a 12 oz bag. It's a medium roast from Colombia with notes of toffee, red apple, and a smooth body.",
+  },
+  {
+    question: "How long does shipping take?",
+    answer: "Orders are roasted and shipped within 48 hours. Standard shipping takes 3-5 business days and costs $4.99, or is free on orders over $35. Express takes 1-2 business days for $12.99. We ship within the United States and Canada, and Canada takes 7-10 business days for $14.99.",
+  },
+  {
+    question: "Do you have decaf?",
+    answer: "Yes! Our Decaf Dream is a medium roast from Guatemala, made with the chemical-free Swiss Water process. It has notes of cocoa, almond, and mild sweetness, and costs $16.49 for a 12 oz bag.",
+  },
+  {
+    question: "How do subscriptions work?",
+    answer: "You can get coffee delivered weekly, every two weeks, or monthly, and you choose your roast and grind. Subscribers save 10% on every order. You can skip, pause, or cancel anytime from your account page, at least 48 hours before the next shipment.",
+  },
+  {
+    question: "What is your return policy?",
+    answer: "If you're unhappy with your coffee, contact us within 30 days for a replacement or a full refund, and you don't need to send the coffee back. Equipment like brewers and mugs can be returned unused within 30 days.",
+  },
 ];
 
 let suggestionsEl = null;
@@ -89,12 +104,12 @@ function showSuggestions() {
   suggestionsEl = document.createElement("div");
   suggestionsEl.className = "suggestions";
 
-  SUGGESTED_QUESTIONS.forEach((question) => {
+  SUGGESTED.forEach((item) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "suggestion";
-    btn.textContent = question;
-    btn.addEventListener("click", () => sendMessage(question));
+    btn.textContent = item.question;
+    btn.addEventListener("click", () => answerInstantly(item));
     suggestionsEl.appendChild(btn);
   });
 
@@ -106,6 +121,17 @@ function clearSuggestions() {
     suggestionsEl.remove();
     suggestionsEl = null;
   }
+}
+
+function answerInstantly(item) {
+  clearSuggestions();
+  addMessage(item.question, "user");
+  const reply = addMessage("Typing...", "bot typing");
+  setTimeout(() => {
+    reply.textContent = item.answer;
+    reply.classList.remove("typing");
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }, 400);
 }
 
 showSuggestions();
