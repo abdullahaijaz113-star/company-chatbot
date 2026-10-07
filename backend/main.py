@@ -5,16 +5,16 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["https://brewly-coffee-site.vercel.app"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 client = genai.Client()
 
@@ -38,7 +38,7 @@ COMPANY INFORMATION:
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(max_length=500)
 
 
 @app.get("/health")
