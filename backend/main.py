@@ -53,6 +53,7 @@ def chat(request: ChatRequest):
             model="gemini-3.8-flash",
             system_instruction=SYSTEM_PROMPT,
             input=request.message,
+            generation_config={"thinking_level": "low"},
         )
         return {"reply": interaction.output_text}
     except Exception as error:
