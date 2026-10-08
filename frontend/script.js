@@ -135,3 +135,66 @@ function answerInstantly(item) {
 }
 
 showSuggestions();
+
+// Load products from the database into the Our Coffee section
+const productGrid = document.getElementById("product-grid");
+
+function renderPublicProducts(products) {
+  productGrid.textContent = "";
+
+  if (!products.length) {
+    const note = document.createElement("p");
+    note.className = "grid-note";
+    note.textContent = "No products to show yet. Please check back soon.";
+    productGrid.appendChild(note);
+    return;
+  }
+
+  products.forEach((p) => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    if (p.image_url && p.image_url.startsWith("https://")) {
+      const img = document.createElement("img");
+      img.className = "card-image";
+      img.src = p.image_url;
+      img.alt = p.name;
+      img.loading = "lazy";
+      card.appendChild(img);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = p.name;
+    card.appendChild(title);
+
+    if (p.description) {
+      const desc = document.createElement("p");
+      desc.textContent = p.description;
+      card.appendChild(desc);
+    }
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = "$" + Number(p.price).toFixed(2);
+    card.appendChild(price);
+
+    productGrid.appendChild(card);
+  });
+}
+
+async function loadPublicProducts() {
+  if (!productGrid) return;
+  try {
+    const response = await fetch(API_URL + "/products");
+    if (!response.ok) throw new Error("bad response");
+    renderPublicProducts(await response.json());
+  } catch (error) {
+    productGrid.textContent = "";
+    const note = document.createElement("p");
+    note.className = "grid-note";
+    note.textContent = "Products could not be loaded right now. Please try again later.";
+    productGrid.appendChild(note);
+  }
+}
+
+loadPublicProducts();

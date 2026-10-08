@@ -174,3 +174,17 @@ body {
 .site-footer p {
   margin: 0;
 }
+
+.card-image {
+  display: block;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 12px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.grid-note {
+  grid-column: 1 / -1;
+  color: #8a5a3b;
+}
