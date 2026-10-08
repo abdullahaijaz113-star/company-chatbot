@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Brewly Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin">
+    <h1>Brewly Admin</h1>
+
+    <section id="login-view" class="panel">
+      <h2>Log in</h2>
+      <form id="login-form">
+        <label>Username
+          <input id="login-username" type="text" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input id="login-password" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit">Log in</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <div id="dashboard-view" hidden>
+      <div class="topbar">
+        <span id="welcome"></span>
+        <button type="button" id="logout-button" class="secondary">Log out</button>
+      </div>
+
+      <section class="panel">
+        <h2>Add a product</h2>
+        <form id="product-form">
+          <label>Name
+            <input id="product-name" type="text" maxlength="100" required>
+          </label>
+          <label>Description
+            <textarea id="product-description" maxlength="1000" rows="3"></textarea>
+          </label>
+          <label>Price (USD)
+            <input id="product-price" type="number" min="0" step="0.01" required>
+          </label>
+          <label>Image (JPG, PNG or WebP, up to 2 MB)
+            <input id="product-image" type="file" accept="image/jpeg,image/png,image/webp">
+          </label>
+          <button type="submit">Add product</button>
+          <p id="product-message" class="message" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Products</h2>
+        <div id="product-list"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Add another admin</h2>
+        <form id="admin-form">
+          <label>Username (3+ characters)
+            <input id="new-admin-username" type="text" minlength="3" maxlength="50" autocomplete="off" required>
+          </label>
+          <label>Password (8+ characters)
+            <input id="new-admin-password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required>
+          </label>
+          <button type="submit">Create admin</button>
+          <p id="admin-message" class="message" role="status"></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
