@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from pydantic import BaseModel, Field
+from shop import router as shop_router
 
 load_dotenv()
 
@@ -13,9 +14,10 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://brewly-coffee-site.vercel.app"],
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+app.include_router(shop_router)
 client = genai.Client()
 
 # Load the company data from the JSON file
