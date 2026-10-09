@@ -6,6 +6,7 @@
   <title>Brewly Coffee Co. | Fresh-roasted coffee, delivered</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="chat.css">
+  <link rel="stylesheet" href="cart.css">
 </head>
 <body>
 
@@ -18,6 +19,7 @@
       <a href="#services">Services</a>
       <a href="#contact">Contact Us</a>
     </nav>
+        <button type="button" class="cart-button" id="cart-button" aria-label="Open cart">Cart <span id="cart-count">0</span></button>
   </header>
 
   <section id="home" class="hero">
@@ -92,6 +94,17 @@
   <footer class="site-footer">
     <p>&copy; 2026 Brewly Coffee Co. This is a demo project with fictional company details.</p>
   </footer>
+
+    <!-- Cart drawer -->
+  <div class="cart-overlay" id="cart-overlay" hidden></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart" hidden>
+    <header class="cart-header">
+      <h2 id="cart-title">Your cart</h2>
+      <button type="button" id="cart-close" aria-label="Close cart">✕</button>
+    </header>
+    <div class="cart-body" id="cart-body"></div>
+  </aside>
+
     <!-- Chat widget -->
   <button class="chat-launcher" id="chat-launcher" type="button" aria-label="Open chat" aria-expanded="false">💬</button>
 
@@ -115,6 +128,7 @@
   </div>
 
   <script src="script.js"></script>
+    <script src="cart.js"></script>
 
 </body>
 </html>

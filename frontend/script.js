@@ -177,6 +177,13 @@ function renderPublicProducts(products) {
     price.className = "price";
     price.textContent = "$" + Number(p.price).toFixed(2);
     card.appendChild(price);
+    
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "add-to-cart";
+    addBtn.textContent = "Add to cart";
+    addBtn.addEventListener("click", () => addToCart(p));
+    card.appendChild(addBtn);
 
     productGrid.appendChild(card);
   });
