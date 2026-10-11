@@ -274,3 +274,133 @@ body {
     border-bottom: none;
   }
 }
+
+/* Contact form */
+.contact-form {
+  max-width: 1000px;
+  margin: 24px auto 0;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5d9cc;
+  border-radius: 16px;
+}
+
+.contact-form h3 {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #4b2e1e;
+}
+
+.field {
+  display: block;
+  margin-bottom: 12px;
+  padding: 10px 16px 8px;
+  background: #f7f3ee;
+  border: 1px solid #e5d9cc;
+  border-radius: 14px;
+}
+
+.field:focus-within {
+  background: #ffffff;
+  border-color: #e0a458;
+}
+
+.field > span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4b2e1e;
+}
+
+.field input,
+.field select,
+.field textarea {
+  display: block;
+  width: 100%;
+  padding: 4px 0 0;
+  font: inherit;
+  font-size: 16px;
+  color: #2b1a10;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.field ::placeholder {
+  color: #b9aea2;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.contact-submit {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px;
+  font: inherit;
+  font-size: 1rem;
+  color: #ffffff;
+  background: #4b2e1e;
+  border: none;
+  border-radius: 28px;
+  cursor: pointer;
+}
+
+.contact-submit:hover {
+  background: #6b4429;
+}
+
+.contact-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contact-status {
+  min-height: 1.4em;
+  margin: 10px 0 0;
+  text-align: center;
+  color: #2e6b3a;
+}
+
+.contact-status.error {
+  color: #b3261e;
+}
+
+.contact-note {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #8a5a3b;
+}
+
+/* Hidden field that only bots fill in */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .contact-form {
+    padding: 18px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

@@ -84,6 +84,48 @@
         <p>Roastery shop open Saturdays, 10 AM to 4 PM.</p>
       </article>
     </div>
+        <form class="contact-form" id="contact-form">
+      <h3>Send us a message</h3>
+
+      <label class="field">
+        <span>Full name *</span>
+        <input id="cf-name" type="text" required minlength="2" maxlength="100" placeholder="Enter your name" autocomplete="name">
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Email *</span>
+          <input id="cf-email" type="email" required maxlength="120" placeholder="Enter your email" autocomplete="email">
+        </label>
+        <label class="field">
+          <span>Phone</span>
+          <input id="cf-phone" type="tel" maxlength="30" placeholder="Enter your phone number" autocomplete="tel">
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Needed service *</span>
+        <select id="cf-topic" required>
+          <option value="" disabled selected>Please choose</option>
+          <option value="General question">General question</option>
+          <option value="Order or delivery">Order or delivery</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Message *</span>
+        <textarea id="cf-message" required minlength="5" maxlength="2000" rows="5" placeholder="Your message here..."></textarea>
+      </label>
+
+      <div class="hp" aria-hidden="true">
+        <label>Website <input id="cf-website" type="text" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <button type="submit" class="contact-submit">Submit &rarr;</button>
+      <p class="contact-status" id="contact-status" role="status"></p>
+      <p class="contact-note">Please don't include card numbers or passwords.</p>
+    </form>
   </section>
 
   <footer class="site-footer">

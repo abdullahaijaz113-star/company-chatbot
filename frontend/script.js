@@ -266,3 +266,66 @@ async function loadServices() {
 }
 
 loadServices();
+
+// Contact form
+const contactForm = document.getElementById("contact-form");
+
+async function loadContactTopics() {
+  const select = document.getElementById("cf-topic");
+  try {
+    const response = await fetch(API_URL + "/products?kind=service");
+    if (!response.ok) return;
+    const services = await response.json();
+    const other = select.querySelector("option:last-child");
+    services.forEach((s) => {
+      const option = document.createElement("option");
+      option.value = s.name;
+      option.textContent = s.name;
+      select.insertBefore(option, other);
+    });
+  } catch (e) {}
+}
+
+if (contactForm) {
+  loadContactTopics();
+
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const status = document.getElementById("contact-status");
+    const button = contactForm.querySelector("button[type=submit]");
+    status.className = "contact-status";
+    status.textContent = "Sending...";
+    button.disabled = true;
+
+    try {
+      const response = await fetch(API_URL + "/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: document.getElementById("cf-name").value,
+          email: document.getElementById("cf-email").value,
+          phone: document.getElementById("cf-phone").value,
+          topic: document.getElementById("cf-topic").value,
+          message: document.getElementById("cf-message").value,
+          website: document.getElementById("cf-website").value,
+        }),
+      });
+      const data = await response.json().catch(() => null);
+
+      if (response.ok) {
+        contactForm.reset();
+        status.textContent = "Thank you! We've received your message and will get back to you soon.";
+      } else {
+        const detail = data && data.detail;
+        status.className = "contact-status error";
+        if (typeof detail === "string") status.textContent = detail;
+        else if (Array.isArray(detail) && detail[0] && detail[0].msg) status.textContent = detail[0].msg;
+        else status.textContent = "Something went wrong. Please try again.";
+      }
+    } catch (e) {
+      status.className = "contact-status error";
+      status.textContent = "Can't reach the server right now. Please try again.";
+    }
+    button.disabled = false;
+  });
+}

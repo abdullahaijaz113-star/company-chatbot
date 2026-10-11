@@ -517,6 +517,64 @@ textarea {
   overflow-wrap: break-word;
 }
 
+/* Hamburger button (shown on small screens only) */
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.menu-toggle {
+  display: none;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.message-text {
+  margin: 10px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* Small screens */
 @media (max-width: 860px) {
   .app {
@@ -525,25 +583,38 @@ textarea {
   }
 
   .sidebar {
-    position: static;
+    position: sticky;
+    top: 0;
+    z-index: 20;
     height: auto;
     min-width: 0;
-    gap: 10px;
-    padding: 12px;
+    gap: 0;
+    padding: 10px 12px;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .sidebar-menu {
+    display: none;
+    flex: none;
+    max-height: calc(100vh - 80px);
+    padding-top: 12px;
+    overflow-y: auto;
+  }
+
+  .sidebar-menu.open {
+    display: flex;
   }
 
   .side-nav {
     flex: none;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 4px;
+    gap: 2px;
   }
 
   .side-nav button {
-    flex: none;
-    white-space: nowrap;
+    width: 100%;
   }
 
   .user-chip {
@@ -573,45 +644,4 @@ textarea {
   .order summary {
     flex-wrap: wrap;
   }
-}
-
-select {
-  display: block;
-  width: 100%;
-  margin-top: 4px;
-  padding: 10px 12px;
-  font: inherit;
-  font-size: 16px;
-  font-weight: 400;
-  background: #ffffff;
-  border: 1px solid #cdbba8;
-  border-radius: 10px;
-}
-
-.btn-outline {
-  color: #4b2e1e;
-  background: #ffffff;
-}
-
-.row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.edit-form {
-  flex: 1;
-  min-width: 0;
-}
-
-.edit-form .row-actions {
-  margin-top: 8px;
-}
-
-.product-info .kind-tag {
-  padding: 1px 8px;
-  font-size: 0.75rem;
-  color: #4b2e1e;
-  background: #efe4d8;
-  border-radius: 10px;
 }

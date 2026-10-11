@@ -8,6 +8,7 @@ from google import genai
 from pydantic import BaseModel, Field
 from shop import router as shop_router
 from orders import router as orders_router
+from contact import router as contact_router
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ app.add_middleware(
 )
 app.include_router(shop_router)
 app.include_router(orders_router)
+app.include_router(contact_router)
 
 client = genai.Client()
 

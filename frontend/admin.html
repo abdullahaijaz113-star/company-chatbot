@@ -26,17 +26,25 @@
 
   <div id="app" class="app" hidden>
     <aside class="sidebar">
-      <div class="brand">Brewly<span>Admin</span></div>
-      <nav class="side-nav" id="side-nav">
-        <button type="button" data-view="home" class="active">Home</button>
-        <button type="button" data-view="products">Products</button>
-        <button type="button" data-view="orders">Orders</button>
-        <button type="button" data-view="customers">Customers</button>
-        <button type="button" data-view="settings">Settings</button>
-      </nav>
-      <div class="user-chip">
-        <span id="welcome"></span>
-        <button type="button" id="logout-button" class="btn btn-ghost">Log out</button>
+      <div class="sidebar-top">
+        <button type="button" class="menu-toggle" id="admin-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="admin-menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="brand">Brewly<span>Admin</span></div>
+      </div>
+      <div class="sidebar-menu" id="admin-menu">
+        <nav class="side-nav" id="side-nav">
+          <button type="button" data-view="home" class="active">Home</button>
+          <button type="button" data-view="products">Products</button>
+          <button type="button" data-view="orders">Orders</button>
+          <button type="button" data-view="messages" id="messages-nav">Messages</button>
+          <button type="button" data-view="customers">Customers</button>
+          <button type="button" data-view="settings">Settings</button>
+        </nav>
+        <div class="user-chip">
+          <span id="welcome"></span>
+          <button type="button" id="logout-button" class="btn btn-ghost">Log out</button>
+        </div>
       </div>
     </aside>
 
@@ -107,6 +115,11 @@
         <h1>Orders</h1>
         <div class="filters" id="order-filters"></div>
         <div id="orders-box"></div>
+      </section>
+
+      <section id="view-messages" class="view" hidden>
+        <h1>Messages</h1>
+        <div id="messages-box"></div>
       </section>
 
       <section id="view-customers" class="view" hidden>

@@ -22,7 +22,7 @@ const NEXT_ACTIONS = {
   cancelled: [],
 };
 const REVENUE_STATUSES = ["paid", "shipped", "delivered"];
-const VIEWS = ["home", "products", "orders", "customers", "settings"];
+const VIEWS = ["home", "products", "orders", "messages", "customers", "settings"];
 
 const $ = (id) => document.getElementById(id);
 
@@ -85,6 +85,7 @@ function showApp() {
   $("app").hidden = false;
   $("welcome").textContent = "Logged in as " + sessionStorage.getItem("admin_username");
   showView("home");
+    loadMessages();
 }
 
 async function api(path, options = {}) {
@@ -151,6 +152,7 @@ $("logout-button").addEventListener("click", () => showLogin(""));
 
 // Navigation
 function showView(name) {
+  setAdminMenu(false);
   VIEWS.forEach((v) => {
     $("view-" + v).hidden = v !== name;
   });
@@ -160,6 +162,7 @@ function showView(name) {
   if (name === "home") loadHome();
   else if (name === "products") loadProducts();
   else if (name === "orders" || name === "customers") loadOrders();
+  else if (name === "messages") loadMessages();
 }
 
 document.querySelectorAll("#side-nav button").forEach((b) => {
@@ -732,6 +735,127 @@ $("admin-form").addEventListener("submit", async (event) => {
   }
   button.disabled = false;
 });
+
+// Hamburger menu (phones)
+const adminMenuToggle = $("admin-menu-toggle");
+const adminMenu = $("admin-menu");
+
+function setAdminMenu(open) {
+  adminMenu.classList.toggle("open", open);
+  adminMenuToggle.setAttribute("aria-expanded", String(open));
+  adminMenuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+
+adminMenuToggle.addEventListener("click", () => {
+  setAdminMenu(!adminMenu.classList.contains("open"));
+});
+
+// Messages from the contact form
+let messages = [];
+const openMessages = new Set();
+
+async function loadMessages() {
+  const box = $("messages-box");
+  box.textContent = "Loading...";
+  try {
+    const result = await api("/admin/messages");
+    if (!result.ok) {
+      box.textContent = errorText(result);
+      return;
+    }
+    messages = result.data;
+    renderMessages();
+  } catch (e) {
+    if (!isUnauthorized(e)) box.textContent = "Could not load messages.";
+  }
+}
+
+function renderMessages() {
+  const unread = messages.filter((m) => !m.handled).length;
+  $("messages-nav").textContent = unread ? "Messages (" + unread + ")" : "Messages";
+
+  const box = $("messages-box");
+  box.textContent = "";
+  if (!messages.length) {
+    box.appendChild(el("p", "muted", "No messages yet."));
+    return;
+  }
+  messages.forEach((m) => box.appendChild(messageCard(m)));
+}
+
+function messageCard(m) {
+  const details = el("details", "order");
+  details.open = openMessages.has(m.id);
+  details.addEventListener("toggle", () => {
+    if (details.open) openMessages.add(m.id);
+    else openMessages.delete(m.id);
+  });
+
+  const summary = document.createElement("summary");
+  const main = el("div", "row-main");
+  main.append(el("strong", "", m.name), el("span", "muted", m.topic + " · " + fmtDate(m.created_at)));
+  summary.append(main, el("span", "chip " + (m.handled ? "delivered" : "ordered"), m.handled ? "Handled" : "New"));
+  details.appendChild(summary);
+
+  const body = el("div", "order-body");
+  const contact = el("div", "order-contact");
+  const lines = [["Email", m.email]];
+  if (m.phone) lines.push(["Phone", m.phone]);
+  lines.push(["Topic", m.topic]);
+  lines.forEach(([label, value]) => {
+    const p = el("p");
+    p.append(el("strong", "", label + ": "), document.createTextNode(value));
+    contact.appendChild(p);
+  });
+  body.appendChild(contact);
+  body.appendChild(el("p", "message-text", m.message));
+
+  const actions = el("div", "order-actions");
+  const toggle = el("button", "btn", m.handled ? "Mark as new" : "Mark as handled");
+  toggle.type = "button";
+  toggle.addEventListener("click", () => setHandled(m, !m.handled, actions));
+  const del = el("button", "btn btn-danger", "Delete");
+  del.type = "button";
+  del.addEventListener("click", () => deleteMessage(m, actions));
+  actions.append(toggle, del);
+  body.appendChild(actions);
+
+  details.appendChild(body);
+  return details;
+}
+
+async function setHandled(message, handled, actions) {
+  actions.querySelectorAll("button").forEach((b) => {
+    b.disabled = true;
+  });
+  try {
+    const result = await api("/admin/messages/" + message.id, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ handled }),
+    });
+    if (!result.ok) alert(errorText(result));
+  } catch (e) {
+    if (isUnauthorized(e)) return;
+    alert("Could not update the message.");
+  }
+  loadMessages();
+}
+
+async function deleteMessage(message, actions) {
+  if (!confirm("Delete the message from " + message.name + "?")) return;
+  actions.querySelectorAll("button").forEach((b) => {
+    b.disabled = true;
+  });
+  try {
+    const result = await api("/admin/messages/" + message.id, { method: "DELETE" });
+    if (!result.ok) alert(errorText(result));
+  } catch (e) {
+    if (isUnauthorized(e)) return;
+    alert("Could not delete the message.");
+  }
+  loadMessages();
+}
 
 // Start
 if (getToken()) {
