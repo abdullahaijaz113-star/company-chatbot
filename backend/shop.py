@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+from typing import Literal
 
 import bcrypt
 import httpx
@@ -106,14 +107,17 @@ def add_admin(body: NewAdmin, admin: dict = Depends(current_admin)):
 
 
 @router.get("/products")
-def list_products():
+def list_products(kind: Literal["product", "service"] | None = None):
+    params = {
+        "select": "id,name,description,price,image_url,kind",
+        "order": "created_at.desc",
+    }
+    if kind:
+        params["kind"] = f"eq.{kind}"
     response = httpx.get(
         SUPABASE_URL + "/rest/v1/products",
         headers=db_headers(),
-        params={
-            "select": "id,name,description,price,image_url",
-            "order": "created_at.desc",
-        },
+        params=params,
         timeout=15,
     )
     if response.status_code != 200:
@@ -126,6 +130,7 @@ async def create_product(
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form("", max_length=1000),
     price: float = Form(..., ge=0, le=100000),
+    kind: Literal["product", "service"] = Form("product"),
     image: UploadFile | None = File(None),
     admin: dict = Depends(current_admin),
 ):
@@ -159,6 +164,7 @@ async def create_product(
             "price": price,
             "image_url": image_url,
             "created_by": admin["id"],
+            "kind": kind,
         },
         timeout=15,
     )
@@ -201,3 +207,29 @@ def delete_product(product_id: int, admin: dict = Depends(current_admin)):
             pass
 
     return {"deleted": product_id}
+
+class ProductUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field("", max_length=1000)
+    price: float = Field(ge=0, le=100000)
+
+
+@router.patch("/products/{product_id}")
+def update_product(product_id: int, body: ProductUpdate, admin: dict = Depends(current_admin)):
+    response = httpx.patch(
+        SUPABASE_URL + "/rest/v1/products",
+        headers=db_headers({"Content-Type": "application/json", "Prefer": "return=representation"}),
+        params={"id": f"eq.{product_id}"},
+        json={
+            "name": body.name.strip(),
+            "description": body.description.strip(),
+            "price": body.price,
+        },
+        timeout=15,
+    )
+    if response.status_code != 200:
+        raise HTTPException(status_code=502, detail="Could not update the product.")
+    rows = response.json()
+    if not rows:
+        raise HTTPException(status_code=404, detail="Product not found.")
+    return rows[0]

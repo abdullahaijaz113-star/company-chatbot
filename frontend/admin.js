@@ -541,31 +541,113 @@ function renderProducts(products) {
     return;
   }
 
-  products.forEach((p) => {
-    const row = el("div", "product-row");
+  const sorted = [...products].sort((a, b) =>
+    a.kind === b.kind ? 0 : a.kind === "product" ? -1 : 1
+  );
+  sorted.forEach((p) => list.appendChild(productRow(p)));
+}
 
-    if (p.image_url && p.image_url.startsWith("https://")) {
-      const img = el("img");
-      img.src = p.image_url;
-      img.alt = p.name;
-      row.appendChild(img);
+function productRow(p) {
+  const row = el("div", "product-row");
+
+  if (p.image_url && p.image_url.startsWith("https://")) {
+    const img = el("img");
+    img.src = p.image_url;
+    img.alt = p.name;
+    row.appendChild(img);
+  }
+
+  const info = el("div", "product-info");
+  info.append(
+    el("strong", "", p.name),
+    el("span", "", money(p.price)),
+    el("span", "kind-tag", p.kind === "service" ? "Service" : "Product"),
+    el("p", "", p.description || "")
+  );
+  row.appendChild(info);
+
+  const actions = el("div", "row-actions");
+  const edit = el("button", "btn btn-outline", "Edit");
+  edit.type = "button";
+  edit.addEventListener("click", () => row.replaceWith(editRow(p)));
+  const del = el("button", "btn btn-danger", "Delete");
+  del.type = "button";
+  del.addEventListener("click", () => deleteProduct(p, del));
+  actions.append(edit, del);
+  row.appendChild(actions);
+
+  return row;
+}
+
+function editRow(p) {
+  const row = el("div", "product-row");
+  const form = el("form", "edit-form");
+
+  const nameLabel = el("label", "", "Name");
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.maxLength = 100;
+  nameInput.required = true;
+  nameInput.value = p.name;
+  nameLabel.appendChild(nameInput);
+
+  const descLabel = el("label", "", "Description");
+  const descInput = document.createElement("textarea");
+  descInput.rows = 3;
+  descInput.maxLength = 1000;
+  descInput.value = p.description || "";
+  descLabel.appendChild(descInput);
+
+  const priceLabel = el("label", "", "Price (USD)");
+  const priceInput = document.createElement("input");
+  priceInput.type = "number";
+  priceInput.min = "0";
+  priceInput.step = "0.01";
+  priceInput.required = true;
+  priceInput.value = Number(p.price).toFixed(2);
+  priceLabel.appendChild(priceInput);
+
+  const message = el("p", "message");
+  const actions = el("div", "row-actions");
+  const save = el("button", "btn", "Save");
+  save.type = "submit";
+  const cancel = el("button", "btn btn-outline", "Cancel");
+  cancel.type = "button";
+  cancel.addEventListener("click", () => loadProducts());
+  actions.append(save, cancel);
+
+  form.append(nameLabel, descLabel, priceLabel, message, actions);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    message.className = "message";
+    message.textContent = "Saving...";
+    save.disabled = true;
+    try {
+      const result = await api("/products/" + p.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameInput.value,
+          description: descInput.value,
+          price: Number(priceInput.value),
+        }),
+      });
+      if (result.ok) {
+        loadProducts();
+        return;
+      }
+      message.className = "message error";
+      message.textContent = errorText(result);
+    } catch (e) {
+      if (isUnauthorized(e)) return;
+      message.className = "message error";
+      message.textContent = "Could not save the changes.";
     }
-
-    const info = el("div", "product-info");
-    info.append(
-      el("strong", "", p.name),
-      el("span", "", money(p.price)),
-      el("p", "", p.description || "")
-    );
-    row.appendChild(info);
-
-    const del = el("button", "btn btn-danger", "Delete");
-    del.type = "button";
-    del.addEventListener("click", () => deleteProduct(p, del));
-    row.appendChild(del);
-
-    list.appendChild(row);
+    save.disabled = false;
   });
+
+  row.appendChild(form);
+  return row;
 }
 
 async function deleteProduct(product, button) {
@@ -597,6 +679,7 @@ $("product-form").addEventListener("submit", async (event) => {
   formData.append("name", $("product-name").value);
   formData.append("description", $("product-description").value);
   formData.append("price", $("product-price").value);
+  formData.append("kind", $("product-kind").value);
   const file = $("product-image").files[0];
   if (file) formData.append("image", file);
 

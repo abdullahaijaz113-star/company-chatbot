@@ -289,3 +289,27 @@
   color: #4b2e1e;
   font-size: 1.1rem;
 }
+
+/* Services */
+.service-card {
+  cursor: pointer;
+}
+
+.service-card:hover {
+  border-color: #e0a458;
+}
+
+/* Checkout order summary */
+.cart-thumb {
+  flex: none;
+}
+
+.thumb-placeholder {
+  background: #f1e6da;
+}
+
+.summary-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: #4b2e1e;
+}

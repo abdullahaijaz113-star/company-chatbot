@@ -73,8 +73,14 @@
       <section id="view-products" class="view" hidden>
         <h1>Products</h1>
         <div class="card">
-          <h2>Add a product</h2>
+          <h2>Add a product or service</h2>
           <form id="product-form">
+            <label>Type
+              <select id="product-kind">
+                <option value="product">Product (shown in Our Coffee)</option>
+                <option value="service">Service (shown in Services)</option>
+              </select>
+            </label>
             <label>Name
               <input id="product-name" type="text" maxlength="100" required>
             </label>

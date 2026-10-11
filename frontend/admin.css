@@ -574,3 +574,44 @@ textarea {
     flex-wrap: wrap;
   }
 }
+
+select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  background: #ffffff;
+  border: 1px solid #cdbba8;
+  border-radius: 10px;
+}
+
+.btn-outline {
+  color: #4b2e1e;
+  background: #ffffff;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edit-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-form .row-actions {
+  margin-top: 8px;
+}
+
+.product-info .kind-tag {
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  color: #4b2e1e;
+  background: #efe4d8;
+  border-radius: 10px;
+}

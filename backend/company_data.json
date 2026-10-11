@@ -61,24 +61,14 @@
       "size": "1 kit"
     }
   ],
-  "services": [
-    {
-      "name": "Coffee Subscription",
-      "description": "Get fresh coffee delivered weekly, every two weeks, or monthly. Pick your roast and grind. Skip, pause, or cancel anytime.",
-      "discount": "10% off every order"
-    },
+    "services": [
     {
       "name": "Gift Boxes",
-      "description": "Curated gift sets with three bags of coffee and a Brewly mug, with optional handwritten message.",
-      "price_usd": 49.99
+      "description": "Three bags of coffee and a Brewly mug, with an optional handwritten message. You can order it from the Services section of the website."
     },
     {
       "name": "Wholesale for Cafes",
-      "description": "Bulk pricing for cafes and offices with orders of 20 lbs or more per month. Contact wholesale@brewly.example for a quote."
-    },
-    {
-      "name": "Virtual Tasting Sessions",
-      "description": "45-minute live online cupping session with our head roaster. Held on the first Saturday of every month. Price: $15 per person."
+      "description": "Bulk pricing for cafes and offices ordering 20 lbs or more per month. You can order it from the Services section of the website, or email wholesale@brewly.example."
     }
   ],
   "policies": {
@@ -88,7 +78,6 @@
       "processing_time": "Orders are roasted and shipped within 48 hours."
     },
     "returns_and_refunds": "If you are unhappy with your coffee, contact us within 30 days for a replacement or full refund. No need to return the coffee. Equipment such as brewers and mugs can be returned unused within 30 days.",
-    "subscription": "Subscriptions can be paused, skipped, or canceled anytime from your account page, at least 48 hours before the next shipment.",
     "payment_methods": ["Visa", "Mastercard", "American Express", "PayPal", "Apple Pay"],
     "privacy": "We never sell customer data. Payment details are processed securely through our payment provider and are not stored on our servers."
   },
@@ -112,10 +101,6 @@
     {
       "question": "How do I track my order?",
       "answer": "You will receive a tracking link by email once your order ships. You can also find it under Orders in your account."
-    },
-    {
-      "question": "Can I change my subscription frequency?",
-      "answer": "Yes. Log in, go to Subscriptions, and choose weekly, every two weeks, or monthly."
     },
     {
       "question": "Do you sell coffee machines?",

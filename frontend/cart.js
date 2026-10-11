@@ -234,12 +234,36 @@ function renderCheckout() {
   cartTitle.textContent = "Checkout";
   cartBody.textContent = "";
 
-  const itemCount = cart.reduce((sum, i) => sum + i.quantity, 0);
-  const summary = el("div", "cart-total");
-  summary.append(
-    el("span", "", itemCount + (itemCount === 1 ? " item" : " items")),
-    el("strong", "", money(cartTotalCents()))
+    const itemCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+  cartBody.appendChild(
+    el("h3", "summary-title", "Order summary (" + itemCount + (itemCount === 1 ? " item)" : " items)"))
   );
+
+  const summaryList = el("div", "summary-list");
+  cart.forEach((item) => {
+    const row = el("div", "cart-row");
+
+    if (item.image_url && item.image_url.startsWith("https://")) {
+      const img = el("img", "cart-thumb");
+      img.src = item.image_url;
+      img.alt = "";
+      row.appendChild(img);
+    } else {
+      row.appendChild(el("div", "cart-thumb thumb-placeholder"));
+    }
+
+    const info = el("div", "cart-info");
+    info.appendChild(el("strong", "", item.name));
+    info.appendChild(el("span", "cart-unit", item.quantity + " × " + money(toCents(item.price))));
+    row.appendChild(info);
+    row.appendChild(el("div", "cart-line", money(toCents(item.price) * item.quantity)));
+    summaryList.appendChild(row);
+  });
+  cartBody.appendChild(summaryList);
+
+  const summary = el("div", "cart-total");
+  summary.append(el("span", "", "Total"), el("strong", "", money(cartTotalCents())));
   cartBody.appendChild(summary);
 
   const form = document.createElement("form");

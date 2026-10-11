@@ -89,8 +89,8 @@ const SUGGESTED = [
     answer: "Yes! Our Decaf Dream is a medium roast from Guatemala, made with the chemical-free Swiss Water process. It has notes of cocoa, almond, and mild sweetness, and costs $16.49 for a 12 oz bag.",
   },
   {
-    question: "How do subscriptions work?",
-    answer: "You can get coffee delivered weekly, every two weeks, or monthly, and you choose your roast and grind. Subscribers save 10% on every order. You can skip, pause, or cancel anytime from your account page, at least 48 hours before the next shipment.",
+    question: "Do you offer gift boxes?",
+    answer: "Yes! Our Gift Boxes include three bags of coffee and a Brewly mug, with an optional handwritten message. You can order one from the Services section on this page.",
   },
   {
     question: "What is your return policy?",
@@ -192,7 +192,7 @@ function renderPublicProducts(products) {
 async function loadPublicProducts() {
   if (!productGrid) return;
   try {
-    const response = await fetch(API_URL + "/products");
+    const response = await fetch(API_URL + "/products?kind=product");
     if (!response.ok) throw new Error("bad response");
     renderPublicProducts(await response.json());
   } catch (error) {
@@ -205,3 +205,64 @@ async function loadPublicProducts() {
 }
 
 loadPublicProducts();
+
+// Services (loaded from the database, clicking one adds it to the cart)
+const serviceGrid = document.getElementById("service-grid");
+
+function renderServices(services) {
+  serviceGrid.textContent = "";
+
+  if (!services.length) {
+    const note = document.createElement("p");
+    note.className = "grid-note";
+    note.textContent = "No services to show right now.";
+    serviceGrid.appendChild(note);
+    return;
+  }
+
+  services.forEach((s) => {
+    const card = document.createElement("article");
+    card.className = "card service-card";
+
+    const title = document.createElement("h3");
+    title.textContent = s.name;
+    card.appendChild(title);
+
+    if (s.description) {
+      const desc = document.createElement("p");
+      desc.textContent = s.description;
+      card.appendChild(desc);
+    }
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = "$" + Number(s.price).toFixed(2);
+    card.appendChild(price);
+
+    const orderBtn = document.createElement("button");
+    orderBtn.type = "button";
+    orderBtn.className = "add-to-cart";
+    orderBtn.textContent = "Order now";
+    card.appendChild(orderBtn);
+
+    card.addEventListener("click", () => addToCart(s));
+    serviceGrid.appendChild(card);
+  });
+}
+
+async function loadServices() {
+  if (!serviceGrid) return;
+  try {
+    const response = await fetch(API_URL + "/products?kind=service");
+    if (!response.ok) throw new Error("bad response");
+    renderServices(await response.json());
+  } catch (error) {
+    serviceGrid.textContent = "";
+    const note = document.createElement("p");
+    note.className = "grid-note";
+    note.textContent = "Services could not be loaded right now. Please try again later.";
+    serviceGrid.appendChild(note);
+  }
+}
+
+loadServices();
