@@ -39,9 +39,7 @@ function saveCart() {
 }
 
 function updateCount() {
-  const total = cart.reduce((sum, i) => sum + i.quantity, 0);
-  cartCount.textContent = String(total);
-  cartCount.hidden = total === 0;
+  cartCount.textContent = String(cart.reduce((sum, i) => sum + i.quantity, 0));
 }
 
 function toCents(price) {
@@ -410,25 +408,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateCount();
-
-// Mobile menu (hamburger)
-const menuToggle = document.getElementById("menu-toggle");
-const siteNav = document.getElementById("site-nav");
-
-function setMenuOpen(open) {
-  siteNav.classList.toggle("open", open);
-  menuToggle.setAttribute("aria-expanded", String(open));
-  menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-}
-
-menuToggle.addEventListener("click", () => {
-  setMenuOpen(!siteNav.classList.contains("open"));
-});
-
-siteNav.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", () => setMenuOpen(false));
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") setMenuOpen(false);
-});
