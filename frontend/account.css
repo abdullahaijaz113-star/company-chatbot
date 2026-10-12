@@ -1,0 +1,101 @@
+/* Header account button */
+.account-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #ffffff;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.account-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Green dot when logged in */
+.account-button.signed-in::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: #3bb273;
+  border: 2px solid #4b2e1e;
+  border-radius: 50%;
+}
+
+/* Account popup */
+.account-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.account-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1201;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.account-overlay[hidden],
+.account-modal[hidden] {
+  display: none;
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  color: #ffffff;
+  background: #4b2e1e;
+}
+
+.account-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.account-header button {
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.account-body {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.account-hello {
+  margin: 0 0 2px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #4b2e1e;
+}
+
+.account-email {
+  margin: 0 0 16px;
+  color: #8a5a3b;
+  word-break: break-all;
+}
