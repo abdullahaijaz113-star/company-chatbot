@@ -35,12 +35,22 @@
   </header>
 
   <section id="home" class="hero">
-    <h1>Fresh-roasted coffee, delivered to your door.</h1>
-    <p>Small-batch coffee from single-origin farms, shipped within 48 hours of roasting.</p>
-    <div class="hero-buttons">
-      <a href="#coffee" class="btn btn-primary">Shop Coffee</a>
-      <a href="#contact" class="btn btn-secondary">Contact Us</a>
+    <div class="hero-slides" aria-hidden="true">
+      <div class="hero-slide active" style="background-image: url('images/hero-1.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('images/hero-2.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('images/hero-3.jpg')"></div>
     </div>
+
+    <div class="hero-content">
+      <h1>Fresh-roasted coffee, delivered to your door.</h1>
+      <p>Small-batch coffee from single-origin farms, shipped within 48 hours of roasting.</p>
+      <div class="hero-buttons">
+        <a href="#coffee" class="btn btn-primary">Shop Coffee</a>
+        <a href="#contact" class="btn btn-secondary">Contact Us</a>
+      </div>
+    </div>
+
+    <div class="hero-dots" id="hero-dots"></div>
   </section>
 
   <section id="about" class="section">

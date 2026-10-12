@@ -329,3 +329,45 @@ if (contactForm) {
     button.disabled = false;
   });
 }
+// Hero slider
+(function () {
+  const slides = document.querySelectorAll(".hero-slide");
+  const dotsBox = document.getElementById("hero-dots");
+  if (slides.length < 2 || !dotsBox) return;
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const dots = [];
+  let current = 0;
+  let timer = null;
+
+  function show(index) {
+    current = index;
+    slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+    dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
+  }
+
+  function start() {
+    if (reduceMotion) return;
+    timer = setInterval(() => show((current + 1) % slides.length), 5000);
+  }
+
+  function restart() {
+    clearInterval(timer);
+    start();
+  }
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", "Show slide " + (i + 1));
+    dot.addEventListener("click", () => {
+      show(i);
+      restart();
+    });
+    dotsBox.appendChild(dot);
+    dots.push(dot);
+  });
+
+  show(0);
+  start();
+})();
