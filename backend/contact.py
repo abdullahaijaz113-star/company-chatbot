@@ -1,5 +1,8 @@
+import os
 import re
+import smtplib
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
@@ -33,6 +36,39 @@ class ContactIn(BaseModel):
 
 class HandledUpdate(BaseModel):
     handled: bool
+def notify_admin(body: ContactIn) -> None:
+    """Email the admin about a new contact message. Never raises: a failed email must not break the form."""
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_APP_PASSWORD")
+    to_addr = os.environ.get("ADMIN_NOTIFY_EMAIL") or user
+    if not user or not password or not to_addr:
+        print("Email notification skipped: SMTP settings are missing.")
+        return
+
+    def one_line(text: str) -> str:
+        return " ".join(text.split())
+
+    msg = EmailMessage()
+    msg["Subject"] = f"New contact message: {one_line(body.topic)} - {one_line(body.name)}"[:150]
+    msg["From"] = user
+    msg["To"] = to_addr
+    msg["Reply-To"] = body.email
+    msg.set_content(
+        "You have a new message from the Brewly contact form.\n\n"
+        f"Name:    {body.name.strip()}\n"
+        f"Email:   {body.email}\n"
+        f"Phone:   {body.phone.strip() or '-'}\n"
+        f"Topic:   {body.topic.strip()}\n\n"
+        f"Message:\n{body.message.strip()}\n\n"
+        "Tip: press Reply to answer the customer directly."
+    )
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8) as server:
+            server.login(user, password.replace(" ", ""))
+            server.send_message(msg)
+    except Exception as error:
+        print("Email notification failed:", error)
 
 
 @router.post("/contact", status_code=201)
@@ -65,6 +101,8 @@ def send_message(body: ContactIn):
     )
     if response.status_code != 201:
         raise HTTPException(status_code=502, detail="Could not send your message. Please try again.")
+
+    notify_admin(body)
     return {"received": True}
 
 
