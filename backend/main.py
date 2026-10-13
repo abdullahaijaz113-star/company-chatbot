@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from pydantic import BaseModel, Field
@@ -25,6 +25,14 @@ app.include_router(shop_router)
 app.include_router(orders_router)
 app.include_router(contact_router)
 app.include_router(accounts_router)
+
+
+@app.middleware("http")
+async def no_store_for_account_routes(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith(("/account", "/admin")):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 client = genai.Client()
 

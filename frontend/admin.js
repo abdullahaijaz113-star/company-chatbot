@@ -1,4 +1,4 @@
-const API_URL = "https://brewly-chatbot-api.vercel.app";
+const API_URL = "/api";
 
 const STATUS_LABELS = {
   ordered: "Ordered",
@@ -66,13 +66,10 @@ function chip(status) {
 }
 
 // Login, session and API calls
-function getToken() {
-  return sessionStorage.getItem("admin_token");
-}
+let adminName = ""; // display name only. The login itself is an HttpOnly cookie.
 
 function showLogin(message) {
-  sessionStorage.removeItem("admin_token");
-  sessionStorage.removeItem("admin_username");
+  adminName = "";
   stats = null;
   orders = [];
   $("app").hidden = true;
@@ -83,24 +80,20 @@ function showLogin(message) {
 function showApp() {
   $("login-view").hidden = true;
   $("app").hidden = false;
-  $("welcome").textContent = "Logged in as " + sessionStorage.getItem("admin_username");
+  $("welcome").textContent = "Logged in as " + adminName;
   showView("home");
     loadMessages();
 }
 
 async function api(path, options = {}) {
-  const headers = { ...(options.headers || {}) };
-  const token = getToken();
-  if (token) headers["Authorization"] = "Bearer " + token;
-
-  const response = await fetch(API_URL + path, { ...options, headers });
+    const response = await fetch(API_URL + path, { ...options, credentials: "include" });
 
   let data = null;
   try {
     data = await response.json();
   } catch (e) {}
 
-  if (response.status === 401 && path !== "/admin/login") {
+  if (response.status === 401 && path !== "/admin/login" && path !== "/admin/me") {
     showLogin("Your session expired. Please log in again.");
     throw new Error("unauthorized");
   }
@@ -135,8 +128,7 @@ $("login-form").addEventListener("submit", async (event) => {
       }),
     });
     if (result.ok) {
-      sessionStorage.setItem("admin_token", result.data.token);
-      sessionStorage.setItem("admin_username", result.data.username);
+      adminName = result.data.username;
       form.reset();
       showApp();
     } else {
@@ -148,7 +140,18 @@ $("login-form").addEventListener("submit", async (event) => {
   button.disabled = false;
 });
 
-$("logout-button").addEventListener("click", () => showLogin(""));
+$("logout-button").addEventListener("click", async () => {
+  try {
+    const result = await api("/admin/logout", { method: "POST" });
+    if (!result.ok) throw new Error("logout failed");
+  } catch (e) {
+    if (!isUnauthorized(e)) {
+      alert("Could not log out. Please try again.");
+      return;
+    }
+  }
+  showLogin("");
+});
 
 // Navigation
 function showView(name) {
@@ -857,9 +860,20 @@ async function deleteMessage(message, actions) {
   loadMessages();
 }
 
-// Start
-if (getToken()) {
-  showApp();
-} else {
+// Start: ask the server whether the cookie is a valid admin session
+try {
+  sessionStorage.removeItem("admin_token");
+  sessionStorage.removeItem("admin_username");
+} catch (e) {}
+
+(async function () {
+  try {
+    const result = await api("/admin/me");
+    if (result.ok) {
+      adminName = result.data.username;
+      showApp();
+      return;
+    }
+  } catch (e) {}
   showLogin("");
-}
+})();

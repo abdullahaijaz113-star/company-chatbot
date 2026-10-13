@@ -1,5 +1,8 @@
 const API_URL = "https://brewly-chatbot-api.vercel.app";
 
+// Login and account calls go through the site's own domain, so the session cookie is first-party
+const SESSION_API = "/api";
+
 const messagesEl = document.getElementById("messages");
 const inputEl = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-button");

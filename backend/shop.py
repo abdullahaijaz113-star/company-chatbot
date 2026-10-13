@@ -1,15 +1,27 @@
 import os
-import time
 import uuid
 from typing import Literal
 
 import bcrypt
 import httpx
-import jwt
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
 from pydantic import BaseModel, Field
+
+from security import (
+    ADMIN_COOKIE,
+    check_locked,
+    check_origin,
+    clear_cookie,
+    client_ip,
+    enforce_ip_limit,
+    log_attempt,
+    make_jwt,
+    read_jwt,
+    record_failure,
+    record_success,
+    set_cookie,
+)
 
 load_dotenv()
 
@@ -24,7 +36,6 @@ IMAGE_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
 DUMMY_HASH = bcrypt.hashpw(b"not-a-real-password", bcrypt.gensalt())
 
 router = APIRouter()
-bearer = HTTPBearer()
 
 
 def db_headers(extra=None):
@@ -34,12 +45,31 @@ def db_headers(extra=None):
     return headers
 
 
-def current_admin(creds: HTTPAuthorizationCredentials = Depends(bearer)):
+def require_admin_user(request: Request):
+    """Every admin route depends on this: valid admin cookie AND the admin still exists in the database."""
+    check_origin(request)
+    data = read_jwt(JWT_SECRET, request.cookies.get(ADMIN_COOKIE), "admin")
     try:
-        data = jwt.decode(creds.credentials, JWT_SECRET, algorithms=["HS256"])
-    except jwt.PyJWTError:
+        admin_id = int(data["sub"])
+    except (KeyError, ValueError):
         raise HTTPException(status_code=401, detail="Please log in again.")
-    return {"id": int(data["sub"]), "username": data["username"]}
+
+    lookup = httpx.get(
+        SUPABASE_URL + "/rest/v1/admins",
+        headers=db_headers(),
+        params={"id": f"eq.{admin_id}", "select": "id,username"},
+        timeout=15,
+    )
+    if lookup.status_code != 200:
+        raise HTTPException(status_code=503, detail="Service unavailable. Please try again.")
+    rows = lookup.json()
+    if not rows:
+        raise HTTPException(status_code=403, detail="You do not have permission to do this.")
+    return {"id": rows[0]["id"], "username": rows[0]["username"]}
+
+
+# orders.py, contact.py and the routes below already import this name, so nothing else changes
+current_admin = require_admin_user
 
 
 class LoginRequest(BaseModel):
@@ -53,36 +83,61 @@ class NewAdmin(BaseModel):
 
 
 @router.post("/admin/login")
-def login(body: LoginRequest):
+def login(body: LoginRequest, request: Request, response: Response):
+    check_origin(request)
+    ip = client_ip(request)
     username = body.username.strip().lower()
-    response = httpx.get(
+    enforce_ip_limit("admin_login", ip)
+
+    lookup = httpx.get(
         SUPABASE_URL + "/rest/v1/admins",
         headers=db_headers(),
-        params={"username": f"eq.{username}", "select": "id,username,password_hash"},
+        params={
+            "username": f"eq.{username}",
+            "select": "id,username,password_hash,failed_attempts,locked_until",
+        },
         timeout=15,
     )
-    if response.status_code != 200:
+    if lookup.status_code != 200:
         raise HTTPException(status_code=503, detail="Service unavailable. Please try again.")
 
-    rows = response.json()
+    rows = lookup.json()
     admin = rows[0] if rows else None
+    if admin:
+        check_locked(admin, "admin_login", username, ip)
+
     stored = admin["password_hash"].encode("utf-8") if admin else DUMMY_HASH
     password_bytes = body.password.encode("utf-8")
-
     password_ok = len(password_bytes) <= 72 and bcrypt.checkpw(password_bytes, stored)
+
     if not admin or not password_ok:
+        if admin:
+            record_failure("admins", admin)
+        log_attempt("admin_login", username, ip, False, "bad_password" if admin else "unknown_user")
         raise HTTPException(status_code=401, detail="Wrong username or password.")
 
-    token = jwt.encode(
-        {
-            "sub": str(admin["id"]),
-            "username": admin["username"],
-            "exp": int(time.time()) + TOKEN_HOURS * 3600,
-        },
+    record_success("admins", admin)
+    log_attempt("admin_login", username, ip, True)
+
+    token = make_jwt(
         JWT_SECRET,
-        algorithm="HS256",
+        {"sub": str(admin["id"]), "username": admin["username"], "role": "admin"},
+        TOKEN_HOURS * 3600,
     )
-    return {"token": token, "username": admin["username"]}
+    set_cookie(response, ADMIN_COOKIE, token, TOKEN_HOURS * 3600)
+    return {"username": admin["username"]}
+
+
+@router.get("/admin/me")
+def admin_me(admin: dict = Depends(require_admin_user)):
+    return {"username": admin["username"]}
+
+
+@router.post("/admin/logout")
+def admin_logout(request: Request, response: Response):
+    check_origin(request)
+    clear_cookie(response, ADMIN_COOKIE)
+    return {"ok": True}
 
 
 @router.post("/admin/admins", status_code=201)

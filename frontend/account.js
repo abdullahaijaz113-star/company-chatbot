@@ -1,8 +1,15 @@
-// Customer accounts: sign up, log in, session
-const ACCOUNT_TOKEN_KEY = "brewly_customer_token";
-const ACCOUNT_NAME_KEY = "brewly_customer_name";
-
+// Customer accounts: sign up and log in.
+// The session is an HttpOnly cookie set by the server, so JavaScript never sees or stores a token.
 const accountButton = document.getElementById("account-button");
+
+// Display info only (never a credential). Rebuilt from the server on every page load.
+let currentCustomer = null;
+
+// Remove tokens saved by the earlier version of this file
+try {
+  localStorage.removeItem("brewly_customer_token");
+  localStorage.removeItem("brewly_customer_name");
+} catch (e) {}
 
 function acEl(tag, className, text) {
   const node = document.createElement(tag);
@@ -11,30 +18,8 @@ function acEl(tag, className, text) {
   return node;
 }
 
-function getCustomerToken() {
-  try {
-    return localStorage.getItem(ACCOUNT_TOKEN_KEY);
-  } catch (e) {
-    return null;
-  }
-}
-
-function saveCustomerSession(token, name) {
-  try {
-    localStorage.setItem(ACCOUNT_TOKEN_KEY, token);
-    localStorage.setItem(ACCOUNT_NAME_KEY, name);
-  } catch (e) {}
-}
-
-function clearCustomerSession() {
-  try {
-    localStorage.removeItem(ACCOUNT_TOKEN_KEY);
-    localStorage.removeItem(ACCOUNT_NAME_KEY);
-  } catch (e) {}
-}
-
 function isLoggedIn() {
-  return Boolean(getCustomerToken());
+  return currentCustomer !== null;
 }
 
 // Other scripts (orders, favorites) can listen for this
@@ -49,11 +34,7 @@ function updateAccountButton() {
 }
 
 async function accountApi(path, options = {}) {
-  const headers = { ...(options.headers || {}) };
-  const token = getCustomerToken();
-  if (token) headers["Authorization"] = "Bearer " + token;
-
-  const response = await fetch(API_URL + path, { ...options, headers });
+  const response = await fetch(SESSION_API + path, { ...options, credentials: "include" });
 
   let data = null;
   try {
@@ -61,8 +42,8 @@ async function accountApi(path, options = {}) {
   } catch (e) {}
 
   const isAuthForm = path === "/account/login" || path === "/account/signup";
-  if (response.status === 401 && token && !isAuthForm) {
-    clearCustomerSession();
+  if (response.status === 401 && currentCustomer && !isAuthForm) {
+    currentCustomer = null;
     updateAccountButton();
     announceAuthChange();
   }
@@ -74,6 +55,21 @@ function accountErrorText(result) {
   if (typeof detail === "string") return detail;
   if (Array.isArray(detail) && detail[0] && detail[0].msg) return detail[0].msg;
   return "Something went wrong. Please try again.";
+}
+
+// Ask the server whether the cookie is a valid session
+async function loadSession() {
+  try {
+    const result = await accountApi("/account/session");
+    currentCustomer =
+      result.ok && result.data && result.data.authenticated
+        ? { name: result.data.name, email: result.data.email }
+        : null;
+  } catch (e) {
+    currentCustomer = null;
+  }
+  updateAccountButton();
+  announceAuthChange();
 }
 
 // The popup (built once)
@@ -96,9 +92,14 @@ accountHeader.append(accountTitle, accountClose);
 accountModal.append(accountHeader, accountBody);
 document.body.append(accountOverlay, accountModal);
 
-function openAccount() {
+const sessionReady = loadSession();
+
+async function openAccount() {
   accountOverlay.hidden = false;
   accountModal.hidden = false;
+  accountBody.textContent = "";
+  accountBody.appendChild(acEl("p", "cart-note", "Loading..."));
+  await sessionReady;
   if (isLoggedIn()) renderAccountHome();
   else renderAuth("login");
 }
@@ -175,7 +176,7 @@ function renderAuth(mode, notice) {
         body: JSON.stringify(payload),
       });
       if (result.ok) {
-        saveCustomerSession(result.data.token, result.data.name);
+        currentCustomer = { name: result.data.name, email: payload.email.toLowerCase() };
         updateAccountButton();
         announceAuthChange();
         renderAccountHome();
@@ -194,42 +195,35 @@ function renderAuth(mode, notice) {
 }
 
 // View: logged-in home
-async function renderAccountHome() {
+function renderAccountHome() {
   accountTitle.textContent = "My account";
   accountBody.textContent = "";
-  const loading = acEl("p", "cart-note", "Loading...");
-  accountBody.appendChild(loading);
+  accountBody.appendChild(acEl("p", "account-hello", "Hi, " + currentCustomer.name + "!"));
+  accountBody.appendChild(acEl("p", "account-email", currentCustomer.email));
 
-  let result;
-  try {
-    result = await accountApi("/account/me");
-  } catch (e) {
-    loading.textContent = "Can't reach the server right now. Please try again.";
-    return;
-  }
-
-  if (!result.ok) {
-    if (!isLoggedIn()) {
-      renderAuth("login", "Your session expired. Please log in again.");
-    } else {
-      loading.textContent = accountErrorText(result);
-    }
-    return;
-  }
-
-  accountBody.textContent = "";
-  accountBody.appendChild(acEl("p", "account-hello", "Hi, " + result.data.name + "!"));
-  accountBody.appendChild(acEl("p", "account-email", result.data.email));
+  const message = acEl("p", "cart-error");
+  message.setAttribute("role", "alert");
 
   const logout = acEl("button", "cart-secondary", "Log out");
   logout.type = "button";
-  logout.addEventListener("click", () => {
-    clearCustomerSession();
+  logout.addEventListener("click", async () => {
+    logout.disabled = true;
+    message.textContent = "";
+    try {
+      const result = await accountApi("/account/logout", { method: "POST" });
+      if (!result.ok) throw new Error("logout failed");
+    } catch (e) {
+      logout.disabled = false;
+      message.textContent = "Could not log out. Please try again.";
+      return;
+    }
+    currentCustomer = null;
     updateAccountButton();
     announceAuthChange();
     closeAccount();
   });
-  accountBody.appendChild(logout);
+
+  accountBody.append(logout, message);
 }
 
 // Events
