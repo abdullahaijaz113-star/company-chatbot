@@ -21,6 +21,22 @@
         <button type="submit" class="btn">Log in</button>
         <p id="login-error" class="error" role="alert"></p>
       </form>
+            <form id="mfa-form" hidden>
+        <p id="mfa-info">Sending your code...</p>
+        <label>Verification code
+          <input id="mfa-code" type="text" autocomplete="one-time-code" maxlength="24" required>
+        </label>
+        <button type="submit" class="btn">Verify</button>
+        <button type="button" id="mfa-resend" class="btn btn-ghost">Send a new code</button>
+        <p id="mfa-error" class="error" role="alert"></p>
+      </form>
+
+      <div id="backup-panel" hidden>
+        <h2>Save your backup codes</h2>
+        <p>If you can't get an email code, use one of these instead. Each works once. They won't be shown again, so store them somewhere safe.</p>
+        <pre id="backup-list"></pre>
+        <button type="button" id="backup-done" class="btn">I've saved them, continue</button>
+      </div>
     </section>
   </main>
 

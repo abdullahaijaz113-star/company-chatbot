@@ -70,6 +70,10 @@ let adminName = ""; // display name only. The login itself is an HttpOnly cookie
 
 function showLogin(message) {
   adminName = "";
+  $("login-form").hidden = false;
+  $("mfa-form").hidden = true;
+  $("backup-panel").hidden = true;
+  $("mfa-error").textContent = "";
   stats = null;
   orders = [];
   $("app").hidden = true;
@@ -127,7 +131,10 @@ $("login-form").addEventListener("submit", async (event) => {
         password: $("login-password").value,
       }),
     });
-    if (result.ok) {
+    if (result.ok && result.data.mfa_required) {
+      form.reset();
+      startAdminMfa();
+    } else if (result.ok) {
       adminName = result.data.username;
       form.reset();
       showApp();
@@ -151,6 +158,71 @@ $("logout-button").addEventListener("click", async () => {
     }
   }
   showLogin("");
+});
+
+// Two-step verification (admin)
+function startAdminMfa() {
+  $("login-form").hidden = true;
+  $("mfa-form").hidden = false;
+  $("backup-panel").hidden = true;
+  $("mfa-info").textContent = "Sending your code...";
+  $("mfa-code").focus();
+  sendAdminCode();
+}
+
+async function sendAdminCode() {
+  $("mfa-error").textContent = "";
+  try {
+    const result = await api("/account/2fa/send-otp", { method: "POST" });
+    if (result.ok) {
+      $("mfa-info").textContent =
+        "We emailed a 6-digit code to " + result.data.to + ". Enter it below, or use a backup code.";
+    } else {
+      $("mfa-info").textContent = "";
+      $("mfa-error").textContent = errorText(result);
+    }
+  } catch (e) {
+    if (!isUnauthorized(e)) $("mfa-error").textContent = "Can't reach the server. Please try again.";
+  }
+}
+
+function showBackupCodes(codes) {
+  $("mfa-form").hidden = true;
+  $("backup-list").textContent = codes.join("\n");
+  $("backup-panel").hidden = false;
+}
+
+$("mfa-resend").addEventListener("click", sendAdminCode);
+
+$("backup-done").addEventListener("click", () => {
+  $("backup-list").textContent = "";
+  showApp();
+});
+
+$("mfa-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector("button[type=submit]");
+  $("mfa-error").textContent = "";
+  button.disabled = true;
+
+  try {
+    const result = await api("/account/2fa/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: $("mfa-code").value }),
+    });
+    if (result.ok) {
+      adminName = result.data.username;
+      $("mfa-form").reset();
+      if (result.data.backup_codes) showBackupCodes(result.data.backup_codes);
+      else showApp();
+    } else {
+      $("mfa-error").textContent = errorText(result);
+    }
+  } catch (e) {
+    if (!isUnauthorized(e)) $("mfa-error").textContent = "Can't reach the server. Please try again.";
+  }
+  button.disabled = false;
 });
 
 // Navigation

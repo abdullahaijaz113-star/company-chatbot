@@ -99,3 +99,49 @@
   color: #8a5a3b;
   word-break: break-all;
 }
+
+/* Two-step verification */
+.account-section {
+  margin: 0 0 14px;
+  padding: 12px;
+  font-size: 0.9rem;
+  background: #f9f4ee;
+  border-radius: 10px;
+}
+
+.account-section p {
+  margin: 0 0 8px;
+}
+
+.account-link {
+  display: block;
+  margin: 12px auto 0;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #8a5a3b;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.backup-codes {
+  margin: 12px 0;
+  padding: 12px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  text-align: center;
+  white-space: pre-wrap;
+  background: #f3ece4;
+  border-radius: 10px;
+  user-select: all;
+}
+
+.account-ok {
+  margin: 0 0 12px;
+  color: #2e7d32;
+  font-weight: 600;
+}

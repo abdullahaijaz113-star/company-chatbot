@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Resp
 from pydantic import BaseModel, Field
 
 from security import (
+    ADMIN_2FA_REQUIRED,
     ADMIN_COOKIE,
     check_locked,
     check_origin,
@@ -21,6 +22,7 @@ from security import (
     record_failure,
     record_success,
     set_cookie,
+    start_mfa,
 )
 
 load_dotenv()
@@ -116,8 +118,14 @@ def login(body: LoginRequest, request: Request, response: Response):
         log_attempt("admin_login", username, ip, False, "bad_password" if admin else "unknown_user")
         raise HTTPException(status_code=401, detail="Wrong username or password.")
 
+    log_attempt("admin_login", username, ip, True, "password_ok")
+
+    if ADMIN_2FA_REQUIRED:
+        # Password is right, but the admin session only starts after the emailed code is verified
+        start_mfa(response, "admin", admin["id"])
+        return {"mfa_required": True}
+
     record_success("admins", admin)
-    log_attempt("admin_login", username, ip, True)
 
     token = make_jwt(
         JWT_SECRET,

@@ -645,3 +645,14 @@ textarea {
     flex-wrap: wrap;
   }
 }
+#backup-list {
+  margin: 12px 0;
+  padding: 12px;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  background: #f3ece4;
+  border-radius: 8px;
+  user-select: all;
+}

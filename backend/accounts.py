@@ -19,6 +19,7 @@ from security import (
     record_failure,
     record_success,
     set_cookie,
+    start_mfa,
 )
 from shop import SUPABASE_URL, db_headers
 
@@ -110,7 +111,7 @@ def customer_login(body: LoginIn, request: Request, response: Response):
         headers=db_headers(),
         params={
             "email": f"eq.{email}",
-            "select": "id,name,password_hash,failed_attempts,locked_until",
+            "select": "id,name,password_hash,twofa_enabled,failed_attempts,locked_until",
         },
         timeout=15,
     )
@@ -132,6 +133,12 @@ def customer_login(body: LoginIn, request: Request, response: Response):
         log_attempt("customer_login", email, ip, False, "bad_password" if customer else "unknown_email")
         raise HTTPException(status_code=401, detail="Wrong email or password.")
 
+    if customer.get("twofa_enabled"):
+        # Password is right, but the session only starts after the emailed code is verified
+        log_attempt("customer_login", email, ip, True, "password_ok")
+        start_mfa(response, "customer", customer["id"])
+        return {"mfa_required": True}
+
     record_success("customers", customer)
     log_attempt("customer_login", email, ip, True)
     start_session(response, customer["id"])
@@ -150,14 +157,19 @@ def account_session(request: Request, response: Response):
     lookup = httpx.get(
         SUPABASE_URL + "/rest/v1/customers",
         headers=db_headers(),
-        params={"id": f"eq.{customer_id}", "select": "name,email"},
+        params={"id": f"eq.{customer_id}", "select": "name,email,twofa_enabled"},
         timeout=15,
     )
     rows = lookup.json() if lookup.status_code == 200 else []
     if not rows:
         clear_cookie(response, CUSTOMER_COOKIE)
         return {"authenticated": False}
-    return {"authenticated": True, "name": rows[0]["name"], "email": rows[0]["email"]}
+    return {
+        "authenticated": True,
+        "name": rows[0]["name"],
+        "email": rows[0]["email"],
+        "twofa_enabled": bool(rows[0]["twofa_enabled"]),
+    }
 
 
 @router.post("/account/logout")

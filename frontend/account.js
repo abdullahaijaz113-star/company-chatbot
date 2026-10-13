@@ -63,7 +63,7 @@ async function loadSession() {
     const result = await accountApi("/account/session");
     currentCustomer =
       result.ok && result.data && result.data.authenticated
-        ? { name: result.data.name, email: result.data.email }
+        ? { name: result.data.name, email: result.data.email, twofa_enabled: result.data.twofa_enabled }
         : null;
   } catch (e) {
     currentCustomer = null;
@@ -156,6 +156,13 @@ function renderAuth(mode, notice) {
 
   form.append(message, submit, switchBtn);
 
+  if (!signup) {
+    const forgot = acEl("button", "account-link", "Forgot your password?");
+    forgot.type = "button";
+    forgot.addEventListener("click", () => renderForgot());
+    form.appendChild(forgot);
+  }
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     message.textContent = "";
@@ -175,8 +182,12 @@ function renderAuth(mode, notice) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      if (result.ok && result.data.mfa_required) {
+        renderCodeEntry("login");
+        return;
+      }
       if (result.ok) {
-        currentCustomer = { name: result.data.name, email: payload.email.toLowerCase() };
+        currentCustomer = { name: result.data.name, email: payload.email.toLowerCase(), twofa_enabled: false };
         updateAccountButton();
         announceAuthChange();
         renderAccountHome();
@@ -223,6 +234,7 @@ function renderAccountHome() {
     closeAccount();
   });
 
+  accountBody.appendChild(twoFactorSection());
   accountBody.append(logout, message);
 }
 

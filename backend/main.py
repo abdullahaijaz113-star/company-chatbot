@@ -10,6 +10,7 @@ from shop import router as shop_router
 from orders import router as orders_router
 from contact import router as contact_router
 from accounts import router as accounts_router
+from twofa import router as twofa_router
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ app.include_router(shop_router)
 app.include_router(orders_router)
 app.include_router(contact_router)
 app.include_router(accounts_router)
+app.include_router(twofa_router)
 
 
 @app.middleware("http")
