@@ -44,6 +44,17 @@ function updateCount() {
   cartCount.hidden = total === 0;
 }
 
+// Empties the cart completely: memory, storage and the header badge
+function clearCart() {
+  cart = [];
+  try {
+    localStorage.removeItem(CART_KEY);
+  } catch (e) {}
+  updateCount();
+  // If the drawer is open, replace whatever it shows (cart, checkout form or receipt) with the empty cart
+  if (!cartDrawer.hidden) renderCart();
+}
+
 function toCents(price) {
   return Math.round(Number(price) * 100);
 }
@@ -434,6 +445,15 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateCount();
+
+// Keep other open tabs in sync (for example after logging out in one tab)
+window.addEventListener("storage", (event) => {
+  if (event.key === CART_KEY || event.key === null) {
+    cart = loadCart();
+    updateCount();
+    if (!cartDrawer.hidden) renderCart();
+  }
+});
 
 // Mobile menu (hamburger)
 const menuToggle = document.getElementById("menu-toggle");

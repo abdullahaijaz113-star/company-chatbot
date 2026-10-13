@@ -229,6 +229,7 @@ function renderAccountHome() {
       return;
     }
     currentCustomer = null;
+    clearCart(); // new person, new cart: clears memory, storage and the badge
     updateAccountButton();
     announceAuthChange();
     closeAccount();
